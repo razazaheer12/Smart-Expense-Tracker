@@ -2,6 +2,7 @@
 
 # 💸 Smart Expense Tracker (PKR)
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://smart-expense-tracker-pkr.netlify.app/)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/razazaheer12/Smart-Expense-Tracker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
@@ -13,7 +14,7 @@
   A clean, modern SaaS personal finance dashboard engineered with a mobile-first approach, localized for <strong>Pakistani Rupees (PKR)</strong>. Features real-time budget spending analytics, dynamic category breakdown, transaction editing, search/filter toolbar, and one-click <strong>CSV & PDF export</strong> utilities.
 </p>
 
-[Explore Repository](https://github.com/razazaheer12/Smart-Expense-Tracker) &bull; [Report Bug](https://github.com/razazaheer12/Smart-Expense-Tracker/issues) &bull; [Request Feature](https://github.com/razazaheer12/Smart-Expense-Tracker/issues)
+[🚀 Live Demo](https://smart-expense-tracker-pkr.netlify.app/) &bull; [Explore Repository](https://github.com/razazaheer12/Smart-Expense-Tracker) &bull; [Report Bug](https://github.com/razazaheer12/Smart-Expense-Tracker/issues) &bull; [Request Feature](https://github.com/razazaheer12/Smart-Expense-Tracker/issues)
 
 </div>
 
@@ -81,7 +82,14 @@ Smart-Expense-Tracker/
 
 ## 🚀 Quick Start Guide
 
-### Option 1: Run Locally via Git Clone
+### Option 1: Try the Live Demo (Instant)
+
+Test the application immediately in your web browser with zero installation:  
+👉 **[https://smart-expense-tracker-pkr.netlify.app/](https://smart-expense-tracker-pkr.netlify.app/)**
+
+---
+
+### Option 2: Run Locally via Git Clone
 
 1. **Clone the repository:**
    ```bash
@@ -99,9 +107,19 @@ Smart-Expense-Tracker/
 
 ---
 
-### Option 2: Deploy to Netlify / Vercel / GitHub Pages
+### Option 3: Deploy to Netlify / Vercel / GitHub Pages
 
 Since **Smart Expense Tracker** is a 100% vanilla client-side project without a build step, deployment is instantaneous:
+
+#### Deploy on Netlify:
+The official live demo is deployed on Netlify:  
+🔗 **[https://smart-expense-tracker-pkr.netlify.app/](https://smart-expense-tracker-pkr.netlify.app/)**
+
+To deploy your own fork:
+1. Go to [Netlify](https://www.netlify.com/) and click **Add new site** &rarr; **Import an existing project**.
+2. Connect your GitHub account and select `razazaheer12/Smart-Expense-Tracker`.
+3. Leave build command and publish directory blank (defaults to root).
+4. Click **Deploy Site**.
 
 #### Deploy on GitHub Pages:
 1. Push the code to your repository:
@@ -113,12 +131,6 @@ Since **Smart Expense Tracker** is a 100% vanilla client-side project without a 
 2. In your repository on GitHub, navigate to **Settings** &rarr; **Pages**.
 3. Under **Branch**, select `main` and root directory `/ (root)`, then click **Save**.
 4. Your site will be published live at `https://razazaheer12.github.io/Smart-Expense-Tracker/`.
-
-#### Deploy on Netlify:
-1. Go to [Netlify](https://www.netlify.com/) and click **Add new site** &rarr; **Import an existing project**.
-2. Connect your GitHub account and select `razazaheer12/Smart-Expense-Tracker`.
-3. Leave build command and publish directory blank (defaults to root).
-4. Click **Deploy Site**.
 
 ---
 

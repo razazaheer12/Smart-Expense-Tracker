@@ -35,9 +35,6 @@ const clearSearchBtnEl = document.getElementById("clear-search-btn");
 const filterPillsContainer = document.getElementById("filter-pills");
 const sortSelectEl = document.getElementById("sort-select");
 
-// DOM References - Analytics
-const categoryBreakdownListEl = document.getElementById("category-breakdown-list");
-
 // DOM References - Form & Type Switcher
 const transactionFormEl = document.getElementById("transaction-form");
 const formTitleEl = document.getElementById("form-title");
@@ -65,6 +62,19 @@ let currentFilter = "all"; // 'all' | 'income' | 'expense'
 let currentSearchQuery = "";
 let currentSort = "date-desc";
 let editingTransactionId = null; // Holds ID of transaction being edited
+
+// Chart Instances (destroyed + re-created on each data update to prevent canvas errors)
+let categoryChartInstance = null;
+let cashFlowChartInstance = null;
+
+// DOM References — Charts & Mobile View Tabs
+const mainContentEl = document.getElementById("main-content");
+const mobileViewTabsEl = document.getElementById("mobile-view-tabs");
+const categoryChartCanvas = document.getElementById("categoryChart");
+const cashFlowChartCanvas = document.getElementById("cashFlowChart");
+const categoryEmptyState = document.getElementById("category-empty-state");
+const cashflowEmptyState = document.getElementById("cashflow-empty-state");
+
 
 // ==========================================================================
 // INITIALIZATION
@@ -158,6 +168,30 @@ function setupEventListeners() {
       closeClearModal();
     }
   });
+
+  // Mobile View Tab Switcher ("Quick View" vs "Analytics")
+  if (mobileViewTabsEl) {
+    mobileViewTabsEl.addEventListener("click", (e) => {
+      const btn = e.target.closest(".view-tab-btn");
+      if (!btn) return;
+
+      const tab = btn.dataset.tab;
+      mobileViewTabsEl.querySelectorAll(".view-tab-btn").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
+
+      if (mainContentEl) mainContentEl.setAttribute("data-active-tab", tab);
+
+      // Resize charts so they render at the correct pixel dimensions after display change
+      setTimeout(() => {
+        if (categoryChartInstance) categoryChartInstance.resize();
+        if (cashFlowChartInstance) cashFlowChartInstance.resize();
+      }, 50);
+    });
+  }
 }
 
 // ==========================================================================
@@ -367,7 +401,8 @@ function getFilteredTransactions() {
 function renderApp() {
   updateSummary();
   updateSpendingProgress();
-  updateCategoryBreakdown();
+  renderCategoryChart();
+  renderCashFlowChart();
   renderTransactions();
 }
 
@@ -501,54 +536,242 @@ function updateSpendingProgress() {
   spendingRemainingTextEl.textContent = remainingMessage;
 }
 
-function updateCategoryBreakdown() {
-  const expenseTransactions = transactions.filter((tx) => tx.amount < 0);
-  const totalExpense = Math.abs(
-    expenseTransactions.reduce((acc, tx) => acc + tx.amount, 0)
-  );
+// ==========================================================================
+// VISUAL ANALYTICS — CHART.JS (CATEGORY DONUT + CASH FLOW BAR)
+// ==========================================================================
 
-  categoryBreakdownListEl.innerHTML = "";
+const CHART_COLORS = [
+  "#4f46e5", // Indigo
+  "#059669", // Emerald
+  "#e11d48", // Rose
+  "#d97706", // Amber
+  "#0ea5e9", // Sky
+  "#7c3aed", // Violet
+  "#db2777", // Pink
+  "#0d9488", // Teal
+  "#ea580c", // Orange
+  "#65a30d", // Lime
+  "#6366f1", // Soft Indigo fallback
+];
 
-  if (totalExpense === 0) {
-    categoryBreakdownListEl.innerHTML = `
-      <div style="padding: 24px 8px; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
-        No expense data recorded yet.
-      </div>
-    `;
-    return;
-  }
+function getCategoryData() {
+  const expenseTxs = transactions.filter((tx) => tx.amount < 0);
+  const total = Math.abs(expenseTxs.reduce((acc, tx) => acc + tx.amount, 0));
 
-  // Aggregate expenses by category
-  const categoryTotals = {};
-  expenseTransactions.forEach((tx) => {
+  const catMap = {};
+  expenseTxs.forEach((tx) => {
     const cat = tx.category || "Others";
-    const amt = Math.abs(tx.amount);
-    categoryTotals[cat] = (categoryTotals[cat] || 0) + amt;
+    catMap[cat] = (catMap[cat] || 0) + Math.abs(tx.amount);
   });
 
-  // Sort categories by highest spend
-  const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+  const sorted = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+  return {
+    labels: sorted.map(([cat]) => cat),
+    amounts: sorted.map(([, amt]) => amt),
+    total,
+  };
+}
 
-  sortedCategories.forEach(([category, amount]) => {
-    const percentage = Math.round((amount / totalExpense) * 100);
-    const catIcon = CATEGORY_ICONS[category] || "📦";
+function getCashFlowData() {
+  const monthMap = {};
 
-    const catItem = document.createElement("div");
-    catItem.className = "cat-item";
-    catItem.innerHTML = `
-      <div class="cat-item-header">
-        <span class="cat-item-name">${catIcon} ${escapeHtml(category)}</span>
-        <div>
-          <span class="cat-item-amount">${formatCurrency(amount)}</span>
-          <span class="cat-item-pct">(${percentage}%)</span>
-        </div>
-      </div>
-      <div class="cat-progress-track">
-        <div class="cat-progress-fill" style="width: ${percentage}%;"></div>
-      </div>
-    `;
+  transactions.forEach((tx) => {
+    if (!tx.date) return;
+    const parts = tx.date.split("-");
+    if (parts.length < 2) return;
+    const key = `${parts[0]}-${parts[1]}`; // "YYYY-MM"
+    if (!monthMap[key]) monthMap[key] = { income: 0, expense: 0 };
+    if (tx.amount > 0) monthMap[key].income += tx.amount;
+    else monthMap[key].expense += Math.abs(tx.amount);
+  });
 
-    categoryBreakdownListEl.appendChild(catItem);
+  const sortedKeys = Object.keys(monthMap).sort();
+  const visibleKeys = sortedKeys.slice(-7);
+
+  const labels = visibleKeys.map((key) => {
+    const [year, month] = key.split("-");
+    return new Date(Number(year), Number(month) - 1, 1).toLocaleDateString(
+      "en-PK",
+      { month: "short", year: "2-digit" }
+    );
+  });
+
+  return {
+    labels,
+    incomeData: visibleKeys.map((k) => monthMap[k].income),
+    expenseData: visibleKeys.map((k) => monthMap[k].expense),
+  };
+}
+
+function renderCategoryChart() {
+  if (!categoryChartCanvas) return;
+
+  const { labels, amounts, total } = getCategoryData();
+  const hasData = total > 0;
+
+  if (categoryEmptyState) {
+    categoryEmptyState.style.display = hasData ? "none" : "flex";
+  }
+  categoryChartCanvas.style.display = hasData ? "block" : "none";
+
+  if (categoryChartInstance) {
+    categoryChartInstance.destroy();
+    categoryChartInstance = null;
+  }
+
+  if (!hasData) return;
+
+  const colors = labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]);
+
+  categoryChartInstance = new Chart(categoryChartCanvas, {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [
+        {
+          data: amounts,
+          backgroundColor: colors,
+          borderColor: "#ffffff",
+          borderWidth: 2,
+          hoverOffset: 6,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "68%",
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            font: { family: "Poppins", size: 11, weight: "500" },
+            color: "#475569",
+            boxWidth: 12,
+            boxHeight: 12,
+            borderRadius: 3,
+            padding: 10,
+            usePointStyle: true,
+            pointStyle: "circle",
+          },
+        },
+        tooltip: {
+          backgroundColor: "#0f172a",
+          titleFont: { family: "Poppins", size: 12, weight: "600" },
+          bodyFont: { family: "Poppins", size: 11 },
+          padding: 10,
+          cornerRadius: 8,
+          callbacks: {
+            label: (ctx) => {
+              const pct = total > 0 ? Math.round((ctx.parsed / total) * 100) : 0;
+              return `  ${formatCurrency(ctx.parsed)}  (${pct}%)`;
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderCashFlowChart() {
+  if (!cashFlowChartCanvas) return;
+
+  const { labels, incomeData, expenseData } = getCashFlowData();
+  const hasData = transactions.length > 0;
+
+  if (cashflowEmptyState) {
+    cashflowEmptyState.style.display = hasData ? "none" : "flex";
+  }
+  cashFlowChartCanvas.style.display = hasData ? "block" : "none";
+
+  if (cashFlowChartInstance) {
+    cashFlowChartInstance.destroy();
+    cashFlowChartInstance = null;
+  }
+
+  if (!hasData) return;
+
+  cashFlowChartInstance = new Chart(cashFlowChartCanvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Income",
+          data: incomeData,
+          backgroundColor: "#059669",
+          borderRadius: 6,
+          borderSkipped: false,
+          barPercentage: 0.65,
+          categoryPercentage: 0.7,
+        },
+        {
+          label: "Expenses",
+          data: expenseData,
+          backgroundColor: "#e11d48",
+          borderRadius: 6,
+          borderSkipped: false,
+          barPercentage: 0.65,
+          categoryPercentage: 0.7,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            font: { family: "Poppins", size: 11, weight: "500" },
+            color: "#475569",
+            boxWidth: 12,
+            boxHeight: 12,
+            borderRadius: 3,
+            padding: 14,
+            usePointStyle: true,
+            pointStyle: "circle",
+          },
+        },
+        tooltip: {
+          backgroundColor: "#0f172a",
+          titleFont: { family: "Poppins", size: 12, weight: "600" },
+          bodyFont: { family: "Poppins", size: 11 },
+          padding: 10,
+          cornerRadius: 8,
+          callbacks: {
+            label: (ctx) => `  ${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: {
+            font: { family: "Poppins", size: 10.5 },
+            color: "#94a3b8",
+          },
+        },
+        y: {
+          grid: {
+            color: "#f1f5f9",
+            drawBorder: false,
+          },
+          border: { display: false, dash: [4, 4] },
+          ticks: {
+            font: { family: "Poppins", size: 10 },
+            color: "#94a3b8",
+            maxTicksLimit: 5,
+            callback: (value) => {
+              if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+              if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K`;
+              return value;
+            },
+          },
+        },
+      },
+    },
   });
 }
 
@@ -557,7 +780,10 @@ function updateCategoryBreakdown() {
 // ==========================================================================
 
 function exportToCSV() {
-  if (transactions.length === 0) {
+  // Read full dataset directly from state or LocalStorage fallback
+  const fullData = loadTransactions();
+
+  if (!fullData || fullData.length === 0) {
     alert("No transactions available to export. Add some transactions first!");
     return;
   }
@@ -566,7 +792,7 @@ function exportToCSV() {
   const headers = ["Transaction ID", "Date", "Description", "Category", "Type", "Amount (PKR)"];
 
   // Sort rows chronologically for export
-  const sortedRows = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const sortedRows = [...fullData].sort((a, b) => new Date(a.date) - new Date(b.date));
 
   // Build CSV rows with proper RFC 4180 escaping
   const csvRows = [
@@ -607,12 +833,15 @@ function downloadPDF() {
     return;
   }
 
-  // Get currently filtered or stored transactions
-  const targetTransactions = getFilteredTransactions();
-  if (targetTransactions.length === 0) {
-    alert("No transactions available to generate PDF report. Add transactions or adjust your filters.");
+  // Query full transactions list directly to prevent active filter omissions
+  const allTransactions = loadTransactions();
+  if (!allTransactions || allTransactions.length === 0) {
+    alert("No transactions available to generate PDF report. Add transactions first.");
     return;
   }
+
+  // Sort chronologically (newest to oldest)
+  const targetTransactions = [...allTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({
@@ -640,7 +869,7 @@ function downloadPDF() {
   });
   doc.text(`Generated on: ${currentTimestamp} • Source: FinTrack Financial OS (PKR)`, marginX, 26);
 
-  // 2. Summary Metrics Calculation
+  // 2. Summary Metrics Calculation (Evaluated from full transaction set)
   const totalIncome = targetTransactions
     .filter((tx) => tx.amount > 0)
     .reduce((acc, tx) => acc + tx.amount, 0);
@@ -697,7 +926,7 @@ function downloadPDF() {
   doc.setTextColor(225, 29, 72);
   doc.text(`-${formatCurrency(totalExpenses)}`, expenseCardX + 4, cardY + 13);
 
-  // 3. Transactions Table (PKR Amount Column)
+  // 3. Transactions Table (Income and Expenses Combined)
   const tableData = targetTransactions.map((tx) => {
     const isIncome = tx.amount > 0;
     const typeLabel = isIncome ? "Income" : "Expense";
@@ -854,9 +1083,6 @@ function escapeHtml(string) {
 // PWA SERVICE WORKER REGISTRATION & ICON FALLBACK
 // ==========================================================================
 
-/**
- * Register Service Worker for offline PWA capabilities
- */
 function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
@@ -872,9 +1098,6 @@ function registerServiceWorker() {
   }
 }
 
-/**
- * Fallback icon generator using HTML5 canvas in case static PNGs are not accessible
- */
 function ensureAppIcons() {
   const testImg = new Image();
   testImg.onerror = () => {
@@ -884,7 +1107,6 @@ function ensureAppIcons() {
       canvas.height = 192;
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        // Emerald background (#059669)
         ctx.fillStyle = "#059669";
         if (typeof ctx.roundRect === "function") {
           ctx.beginPath();
@@ -894,7 +1116,6 @@ function ensureAppIcons() {
           ctx.fillRect(0, 0, 192, 192);
         }
 
-        // White upward financial trend emblem
         ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 12;
         ctx.lineCap = "round";
@@ -907,14 +1128,12 @@ function ensureAppIcons() {
         ctx.lineTo(152, 58);
         ctx.stroke();
 
-        // Arrow head
         ctx.beginPath();
         ctx.moveTo(126, 58);
         ctx.lineTo(152, 58);
         ctx.lineTo(152, 84);
         ctx.stroke();
 
-        // Fallback favicon & apple touch icon
         const fallbackUrl = canvas.toDataURL("image/png");
         let iconLink = document.querySelector('link[rel="icon"]');
         if (!iconLink) {

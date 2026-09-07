@@ -106,68 +106,125 @@
         </div>
       </section>
 
+      <!-- Mobile Screens View Switcher ("Quick View" vs "Analytics") -->
+      <div class="mobile-view-tabs" id="mobile-view-tabs" role="tablist" aria-label="Dashboard Views">
+        <button type="button" class="view-tab-btn active" data-tab="quick-view" role="tab" aria-selected="true" id="tab-quick-view">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Quick View</span>
+        </button>
+        <button type="button" class="view-tab-btn" data-tab="analytics" role="tab" aria-selected="false" id="tab-analytics">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Analytics</span>
+        </button>
+      </div>
+
       <!-- Main Dashboard Modular Grid -->
-      <main class="main-content">
-        <!-- Left: Transaction Hub & Activity Feed -->
-        <section class="transaction-container">
-          <div class="section-header">
-            <div class="title-with-badge">
-              <h2>Transactions</h2>
-              <span id="transaction-count" class="count-badge">0</span>
-            </div>
-            <div class="sort-wrapper">
-              <select id="sort-select" class="custom-select-compact" aria-label="Sort transactions">
-                <option value="date-desc">Newest First</option>
-                <option value="date-asc">Oldest First</option>
-                <option value="amount-desc">Highest Amount</option>
-                <option value="amount-asc">Lowest Amount</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Advanced Search & Filter Toolbar -->
-          <div class="toolbar">
-            <div class="search-box">
-              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input
-                type="text"
-                id="search-input"
-                placeholder="Search description or category..."
-                autocomplete="off"
-              />
-              <button id="clear-search-btn" class="clear-search-btn" aria-label="Clear search" style="display: none;">&times;</button>
-            </div>
-
-            <div class="filter-pills" id="filter-pills">
-              <button class="filter-pill active" data-filter="all">All</button>
-              <button class="filter-pill" data-filter="income">Income</button>
-              <button class="filter-pill" data-filter="expense">Expense</button>
-            </div>
-          </div>
-
-          <!-- Transaction List View -->
-          <ul id="transaction-list">
-            <!-- Dynamically populated via index.js -->
-          </ul>
-        </section>
-
-        <!-- Right: Category Analytics & Add/Edit Transaction Form -->
-        <div class="secondary-column">
-          <!-- Category Spending Breakdown Panel -->
-          <section class="analytics-card">
+      <main class="main-content" id="main-content" data-active-tab="quick-view">
+        <!-- Left Column: Cash Flow Chart (Analytics) & Transaction Hub (Quick View) -->
+        <div class="primary-column">
+          <!-- Income vs Expense Cash Flow Bar Chart Card -->
+          <section class="chart-card cashflow-card" id="cashflow-card" data-view="analytics">
             <div class="section-header">
-              <h2>Category Breakdown</h2>
+              <div class="title-with-badge">
+                <h2>Cash Flow</h2>
+                <span class="type-pill-badge">Income vs Expense</span>
+              </div>
             </div>
-            <div id="category-breakdown-list" class="category-breakdown-list">
-              <!-- Dynamically populated with category progress bars via index.js -->
+            <div class="chart-wrapper">
+              <canvas id="cashFlowChart"></canvas>
+              <div id="cashflow-empty-state" class="chart-empty-state" style="display: none;">
+                <svg class="empty-chart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="20" x2="12" y2="10"></line>
+                  <line x1="18" y1="20" x2="18" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="16"></line>
+                </svg>
+                <p>No cash flow data recorded yet.</p>
+                <small>Add transactions to view income vs expenses.</small>
+              </div>
+            </div>
+          </section>
+
+          <!-- Transaction Hub & Activity Feed -->
+          <section class="transaction-container" id="transaction-card" data-view="quick">
+            <div class="section-header">
+              <div class="title-with-badge">
+                <h2>Transactions</h2>
+                <span id="transaction-count" class="count-badge">0</span>
+              </div>
+              <div class="sort-wrapper">
+                <select id="sort-select" class="custom-select-compact" aria-label="Sort transactions">
+                  <option value="date-desc">Newest First</option>
+                  <option value="date-asc">Oldest First</option>
+                  <option value="amount-desc">Highest Amount</option>
+                  <option value="amount-asc">Lowest Amount</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Advanced Search & Filter Toolbar -->
+            <div class="toolbar">
+              <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                  type="text"
+                  id="search-input"
+                  placeholder="Search description or category..."
+                  autocomplete="off"
+                />
+                <button id="clear-search-btn" class="clear-search-btn" aria-label="Clear search" style="display: none;">&times;</button>
+              </div>
+
+              <div class="filter-pills" id="filter-pills">
+                <button class="filter-pill active" data-filter="all">All</button>
+                <button class="filter-pill" data-filter="income">Income</button>
+                <button class="filter-pill" data-filter="expense">Expense</button>
+              </div>
+            </div>
+
+            <!-- Transaction List View -->
+            <ul id="transaction-list">
+              <!-- Dynamically populated via index.js -->
+            </ul>
+          </section>
+        </div>
+
+        <!-- Right Column: Category Breakdown Donut Chart (Analytics) & Add/Edit Form (Quick View) -->
+        <div class="secondary-column">
+          <!-- Category Spending Breakdown Panel (Donut Chart) -->
+          <section class="chart-card analytics-card" id="category-card" data-view="analytics">
+            <div class="section-header">
+              <div class="title-with-badge">
+                <h2>Category Breakdown</h2>
+                <span class="type-pill-badge">Expenses</span>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="categoryChart"></canvas>
+              <div id="category-empty-state" class="chart-empty-state" style="display: none;">
+                <svg class="empty-chart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 2a10 10 0 0 1 10 10"></path>
+                </svg>
+                <p>No expense data recorded yet.</p>
+                <small>Record expenses to view category distribution.</small>
+              </div>
             </div>
           </section>
 
           <!-- Add / Edit Transaction Form Container -->
-          <section class="form-container">
+          <section class="form-container" id="form-card" data-view="quick">
             <div class="section-header">
               <h2 id="form-title">Add Transaction</h2>
             </div>
@@ -269,6 +326,8 @@
       </div>
     </div>
 
+    <!-- Chart.js for Visual Analytics Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="index.js"></script>
   </body>
 </html>

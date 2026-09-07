@@ -775,10 +775,29 @@ h2 {
 }
 
 /* ==========================================================================
+   PRIMARY COLUMN (LEFT DESKTOP COLUMN — CASHFLOW + TRANSACTIONS)
+   ========================================================================== */
+
+.primary-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ==========================================================================
    SECONDARY COLUMN (ANALYTICS & FORM CARDS)
    ========================================================================== */
 
-/* Category Breakdown Card */
+/* Chart Cards (Cash Flow & Category Donut) */
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Category Breakdown Card (retained name for specificity) */
 .analytics-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
@@ -787,70 +806,75 @@ h2 {
   box-shadow: var(--shadow-sm);
 }
 
-.category-breakdown-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  max-height: 220px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.category-breakdown-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.category-breakdown-list::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: var(--radius-pill);
-}
-
-.cat-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.cat-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8rem;
-}
-
-.cat-item-name {
-  color: var(--text-secondary);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.cat-item-amount {
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.cat-item-pct {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin-left: 0.25rem;
-}
-
-.cat-progress-track {
+/* Chart Wrapper — constrains canvas height + positions empty state */
+.chart-wrapper {
+  position: relative;
   width: 100%;
-  height: 6px;
-  background: var(--border-light);
-  border-radius: var(--radius-pill);
-  overflow: hidden;
 }
 
-.cat-progress-fill {
-  height: 100%;
-  border-radius: var(--radius-pill);
-  background: var(--primary-500);
-  transition: width 0.4s ease;
+/* Cash Flow Bar Chart — taller to show month labels */
+.cashflow-card .chart-wrapper {
+  height: 220px;
 }
+
+/* Category Donut Chart — compact square-ish */
+.analytics-card .chart-wrapper {
+  height: 220px;
+}
+
+/* Make canvas fill wrapper */
+.chart-wrapper canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Chart Empty State */
+.chart-empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.empty-chart-icon {
+  width: 34px;
+  height: 34px;
+  stroke: var(--text-dim);
+  margin-bottom: 0.1rem;
+}
+
+.chart-empty-state p {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.chart-empty-state small {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* Type pill badge inside section headers */
+.type-pill-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
 
 /* Add Transaction Form Card */
 .form-container {
@@ -1148,6 +1172,80 @@ input[type="number"] {
 }
 
 /* ==========================================================================
+   MOBILE VIEW TABS ("Quick View" vs "Analytics") — MOBILE ONLY
+   ========================================================================== */
+
+.mobile-view-tabs {
+  display: flex;
+  background: #f1f5f9;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.view-tab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.view-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.view-tab-btn.active {
+  background: #ffffff;
+  color: var(--primary-600);
+  box-shadow: var(--shadow-xs);
+}
+
+.tab-icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* Mobile-only: hide analytics cards in quick-view, vice versa */
+@media (max-width: 767px) {
+  /* Quick View active: show quick cards, hide analytics */
+  #main-content[data-active-tab="quick-view"] [data-view="analytics"] {
+    display: none;
+  }
+
+  /* Analytics active: show analytics cards, hide quick cards */
+  #main-content[data-active-tab="analytics"] [data-view="quick"] {
+    display: none;
+  }
+}
+
+/* Hide tabs on desktop — always show everything */
+@media (min-width: 768px) {
+  .mobile-view-tabs {
+    display: none;
+  }
+
+  /* Always show all cards on desktop */
+  #main-content [data-view] {
+    display: block !important;
+  }
+}
+
+/* ==========================================================================
    MOBILE-FIRST MEDIA QUERIES (PROGRESSIVE ENHANCEMENT)
    ========================================================================== */
 
@@ -1216,6 +1314,7 @@ input[type="number"] {
 
   .transaction-container,
   .analytics-card,
+  .chart-card,
   .form-container {
     padding: 1.5rem;
   }
@@ -1223,10 +1322,16 @@ input[type="number"] {
 
 /* Large Tablets & Small Laptops (min-width: 768px and up to 1023px) */
 @media (min-width: 768px) and (max-width: 1023px) {
-  .secondary-column {
+  .main-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.1fr 0.9fr;
     gap: 1.25rem;
+    align-items: start;
+  }
+
+  .cashflow-card .chart-wrapper,
+  .analytics-card .chart-wrapper {
+    height: 200px;
   }
 }
 
@@ -1247,10 +1352,24 @@ input[type="number"] {
     align-items: start;
   }
 
+  .primary-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
   .secondary-column {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+  }
+
+  .cashflow-card .chart-wrapper {
+    height: 240px;
+  }
+
+  .analytics-card .chart-wrapper {
+    height: 240px;
   }
 }
 

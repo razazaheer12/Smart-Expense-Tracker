@@ -39,32 +39,57 @@
           <h1>Expense Tracker</h1>
         </div>
 
-        <div class="header-actions">
-          <button id="export-csv-btn" class="btn-action" title="Export all transactions to CSV">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
+        <div class="header-actions-wrapper">
+          <button id="mobile-menu-btn" class="btn-mobile-menu" aria-label="Toggle Quick Actions" aria-expanded="false">
+            <svg class="btn-icon menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
-            <span>Export CSV</span>
+            <span>Actions</span>
           </button>
-          <button id="download-pdf-btn" class="btn-action" title="Download PDF Statement Report">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            <span>Download PDF</span>
-          </button>
-          <button id="clear-all-btn" class="btn-action btn-danger" title="Clear all stored transactions">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-            <span>Clear All</span>
-          </button>
+
+          <div id="header-actions-menu" class="header-actions">
+            <button id="export-csv-btn" class="btn-action" title="Export all transactions to CSV">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Export CSV</span>
+            </button>
+            <button id="download-pdf-btn" class="btn-action" title="Download PDF Statement Report">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Download PDF</span>
+            </button>
+            <button id="backup-restore-btn" class="btn-action" title="Backup or Restore Data (JSON)">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>Backup &amp; Restore</span>
+            </button>
+            <button id="subscriptions-btn" class="btn-action" title="Manage Recurring Entries & Subscriptions">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              <span>Subscriptions</span>
+            </button>
+            <button id="clear-all-btn" class="btn-action btn-danger" title="Clear all stored transactions">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Clear All</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -93,15 +118,25 @@
               <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
               </svg>
-              Spending vs Income Ratio
+              <span id="budget-progress-title">Monthly Budget Health</span>
             </span>
-            <span id="spending-percent-text" class="spending-ratio">0%</span>
+            <div class="spending-header-actions">
+              <button type="button" id="open-budget-modal-btn" class="btn-budget-pill" title="Configure budget target and timeframe">
+                <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <span id="budget-target-badge">No Budget Set</span>
+              </button>
+              <span id="spending-percent-text" class="spending-ratio">0%</span>
+            </div>
           </div>
           <div class="progress-track">
             <div id="spending-progress-bar" class="progress-fill" style="width: 0%;"></div>
           </div>
           <div class="spending-meta">
-            <span id="spending-remaining-text">Add income and expenses to track budget health.</span>
+            <span id="spending-remaining-text">No Budget Set - Click to set target</span>
+            <span id="budget-period-spent-text" class="budget-period-spent">Spent: PKR 0.00</span>
           </div>
         </div>
       </section>
@@ -149,6 +184,28 @@
                 </svg>
                 <p>No cash flow data recorded yet.</p>
                 <small>Add transactions to view income vs expenses.</small>
+              </div>
+            </div>
+          </section>
+
+          <!-- Budget vs Actual Expense Comparison Analytics Card -->
+          <section class="chart-card analytics-card" id="budget-comparison-card" data-view="analytics">
+            <div class="section-header">
+              <div class="title-with-badge">
+                <h2>Budget vs Actual</h2>
+                <span class="type-pill-badge" id="budget-comparison-badge">6-Month Trend</span>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="budgetComparisonChart"></canvas>
+              <div id="budget-comparison-empty-state" class="chart-empty-state" style="display: none;">
+                <svg class="empty-chart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <p>No historical expense data yet.</p>
+                <small>Add transactions to compare monthly budget vs actual spent.</small>
               </div>
             </div>
           </section>
@@ -292,6 +349,26 @@
                 </select>
               </div>
 
+              <!-- Recurring Entry Toggle & Frequency Switcher -->
+              <div class="recurring-control-box">
+                <label class="recurring-toggle-label" for="recurring-toggle">
+                  <input type="checkbox" id="recurring-toggle" />
+                  <span class="custom-switch"></span>
+                  <span class="toggle-text">
+                    <strong>Recurring Entry</strong>
+                    <small>Auto-repeat this transaction</small>
+                  </span>
+                </label>
+
+                <div id="recurring-frequency-wrapper" class="recurring-frequency-wrapper" style="display: none;">
+                  <label for="recurring-frequency">Repeat Cycle</label>
+                  <select id="recurring-frequency">
+                    <option value="monthly" selected>Monthly (Repeats on same day each month)</option>
+                    <option value="weekly">Weekly (Repeats every 7 days)</option>
+                  </select>
+                </div>
+              </div>
+
               <!-- Form CTA Actions (Submit & Cancel Edit) -->
               <div class="form-actions">
                 <button type="submit" id="submit-btn">
@@ -325,6 +402,223 @@
         </div>
       </div>
     </div>
+
+    <!-- Backup & Restore Data Modal -->
+    <div id="backup-restore-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-card modal-card-wide">
+        <div class="modal-header-row">
+          <div class="modal-title-wrap">
+            <div class="modal-icon info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <div>
+              <h3>Backup &amp; Restore Data</h3>
+              <p class="modal-subtitle">Manage portable JSON snapshots of your ledger</p>
+            </div>
+          </div>
+          <button id="close-backup-modal-btn" class="modal-close-btn" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="backup-grid">
+          <!-- Section 1: Export Backup -->
+          <div class="backup-card">
+            <div class="backup-card-header">
+              <div class="backup-badge export-badge">Export</div>
+              <h4>Export Backup (.json)</h4>
+              <p>Download your complete transactions, history, and active targets as a portable JSON file.</p>
+            </div>
+            <div class="backup-card-body">
+              <div class="backup-stats-pill">
+                <span id="export-tx-count">0 transactions ready</span>
+              </div>
+              <button id="download-backup-btn" class="btn-primary-action">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download Backup File</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 2: Import / Restore Backup -->
+          <div class="backup-card">
+            <div class="backup-card-header">
+              <div class="backup-badge import-badge">Import</div>
+              <h4>Restore Data (.json)</h4>
+              <p>Upload a FinTrack backup file to restore records on this device.</p>
+            </div>
+            <div class="backup-card-body">
+              <!-- Hidden File Input -->
+              <input type="file" id="restore-file-input" accept=".json,application/json" style="display: none;" />
+              <button type="button" id="trigger-file-select-btn" class="btn-secondary-action">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span id="select-file-label">Select .JSON File</span>
+              </button>
+
+              <!-- Live File Preview Container (hidden until valid file loaded) -->
+              <div id="restore-preview" class="restore-preview-box" style="display: none;">
+                <div class="preview-header">
+                  <span class="preview-filename" id="preview-filename">backup.json</span>
+                  <span class="preview-valid-tag">✓ Valid Schema</span>
+                </div>
+                <div class="preview-grid">
+                  <div class="preview-metric">
+                    <span class="metric-label">Transactions</span>
+                    <span class="metric-val" id="preview-count">0</span>
+                  </div>
+                  <div class="preview-metric">
+                    <span class="metric-label">Date Span</span>
+                    <span class="metric-val" id="preview-dates">-</span>
+                  </div>
+                  <div class="preview-metric">
+                    <span class="metric-label">Net Balance</span>
+                    <span class="metric-val" id="preview-balance">PKR 0.00</span>
+                  </div>
+                </div>
+
+                <!-- Restore Mode Switcher (Merge vs Replace) -->
+                <div class="restore-mode-group">
+                  <label class="mode-label">Restore Strategy:</label>
+                  <div class="mode-options">
+                    <label class="radio-option">
+                      <input type="radio" name="restore-mode" value="merge" checked />
+                      <span><strong>Merge</strong> (Keep existing + append new)</span>
+                    </label>
+                    <label class="radio-option">
+                      <input type="radio" name="restore-mode" value="replace" />
+                      <span><strong>Replace All</strong> (Overwrite local data)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <button type="button" id="execute-restore-btn" class="btn-confirm-restore">
+                  Confirm &amp; Apply Restore
+                </button>
+              </div>
+
+              <!-- Validation Error Box -->
+              <div id="restore-error-box" class="restore-error-box" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Settings Modal -->
+    <div id="budget-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header-row">
+          <div class="modal-title-wrap">
+            <div class="modal-icon info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+            <div>
+              <h3>Overall Budget Limit</h3>
+              <p class="modal-subtitle">Set periodic spending ceiling and alerts</p>
+            </div>
+          </div>
+          <button id="close-budget-modal-btn" class="modal-close-btn" aria-label="Close modal">&times;</button>
+        </div>
+
+        <form id="budget-settings-form" style="width: 100%; display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+          <div class="form-group" style="text-align: left;">
+            <label>Budget Timeframe</label>
+            <div class="budget-period-switcher" id="budget-period-switcher">
+              <button type="button" class="budget-period-btn" data-period="weekly">Weekly</button>
+              <button type="button" class="budget-period-btn active" data-period="monthly">Monthly</button>
+              <button type="button" class="budget-period-btn" data-period="yearly">Yearly</button>
+            </div>
+          </div>
+
+          <div class="form-group" style="text-align: left;">
+            <label for="budget-target-input">Target Budget Amount (PKR)</label>
+            <input
+              type="number"
+              id="budget-target-input"
+              placeholder="e.g. 50000"
+              required
+            />
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="cancel-budget-btn" class="btn-secondary">Cancel</button>
+            <button type="button" id="reset-budget-btn" class="btn-secondary" style="color: var(--expense-600); border-color: var(--expense-border);">Clear Target</button>
+            <button type="submit" id="save-budget-btn" class="btn-primary-action">Save Budget Target</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Subscription & Recurring Rules Manager Modal -->
+    <div id="subscription-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-card modal-card-wide">
+        <div class="modal-header-row">
+          <div class="modal-title-wrap">
+            <div class="modal-icon info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+            </div>
+            <div>
+              <h3>Subscriptions &amp; Recurring Rules</h3>
+              <p class="modal-subtitle">Manage automated income and recurring expenses</p>
+            </div>
+          </div>
+          <button id="close-subscription-modal-btn" class="modal-close-btn" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="subscriptions-list-container">
+          <div id="subscriptions-empty-state" class="subscriptions-empty-state" style="display: none;">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <p>No active subscriptions or recurring rules.</p>
+            <small>Turn on "Recurring Entry" when adding transactions (e.g. Netflix, Salary, Rent) to manage them here.</small>
+          </div>
+          <ul id="subscriptions-list" class="subscriptions-list">
+            <!-- Dynamically populated via index.js -->
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Due Recurring Transactions Prompt Modal -->
+    <div id="due-recurring-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-icon warning">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+        <h3>Due Recurring Transactions</h3>
+        <p>The following scheduled recurring entries have reached their due dates. Select which ones to record to your ledger today:</p>
+        
+        <div id="due-recurring-list" class="due-recurring-list">
+          <!-- Dynamically populated checklist -->
+        </div>
+
+        <div class="modal-actions">
+          <button id="skip-due-btn" class="btn-secondary">Skip for Now</button>
+          <button id="confirm-due-btn" class="btn-primary-action">Add Selected to Ledger</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
     <!-- Chart.js for Visual Analytics Dashboard -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
